@@ -9,7 +9,7 @@ const intTypeId intType = 3
 type intType int8
 
 type IntTag struct {
-	value int32
+	Value int32
 }
 
 func (_ intType) Read(reader Reader) (Tag, error) {
@@ -20,7 +20,7 @@ func (_ intType) Read(reader Reader) (Tag, error) {
 	}
 
 	return IntTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -31,9 +31,13 @@ func (_ intType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected INT")
 	}
 
-	return writer.writeInt32(data.value)
+	return writer.writeInt32(data.Value)
 }
 
 func (_ intType) GetId() int8 {
 	return int8(intTypeId)
+}
+
+func (_ IntTag) getDataType() dataType {
+	return intTypeId
 }

@@ -11,7 +11,7 @@ type listType int8
 
 type ListTag struct {
 	dataType dataType
-	value    []Tag
+	Value    []Tag
 }
 
 func (_ listType) Read(reader Reader) (Tag, error) {
@@ -47,7 +47,7 @@ func (_ listType) Read(reader Reader) (Tag, error) {
 
 	return ListTag{
 		dataType: dataType,
-		value: list,
+		Value:    list,
 	}, nil
 }
 
@@ -62,7 +62,7 @@ func (_ listType) Write(writer Writer, tag Tag) error {
 		return fmt.Errorf("unable to write list datatype. Reason: %w", err)
 	}
 
-	for i, value := range data.value {
+	for i, value := range data.Value {
 		if err := data.dataType.Write(writer, value); err != nil {
 			return fmt.Errorf("unable to write list at index %d. Reason: %w", i, err)
 		}
@@ -73,4 +73,8 @@ func (_ listType) Write(writer Writer, tag Tag) error {
 
 func (_ listType) GetId() int8 {
 	return int8(listTypeId)
+}
+
+func (_ ListTag) getDataType() dataType {
+	return listTypeId
 }

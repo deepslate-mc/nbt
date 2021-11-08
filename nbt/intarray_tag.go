@@ -10,7 +10,7 @@ const intArrayTypeId intArrayType = 11
 type intArrayType int8
 
 type IntArrayTag struct {
-	value []int32
+	Value []int32
 }
 
 func (_ intArrayType) Read(reader Reader) (Tag, error) {
@@ -33,7 +33,7 @@ func (_ intArrayType) Read(reader Reader) (Tag, error) {
 	}
 
 	return IntArrayTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -44,11 +44,11 @@ func (_ intArrayType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected INTARRAY")
 	}
 
-	if err := writer.writeInt32(int32(len(data.value))); err != nil {
+	if err := writer.writeInt32(int32(len(data.Value))); err != nil {
 		return err
 	}
 
-	for i, value := range data.value {
+	for i, value := range data.Value {
 		if err := writer.writeInt32(value); err != nil {
 			return fmt.Errorf("unable to write int array at index %d. Reason: %w", i, err)
 		}
@@ -59,4 +59,8 @@ func (_ intArrayType) Write(writer Writer, tag Tag) error {
 
 func (_ intArrayType) GetId() int8 {
 	return int8(intArrayTypeId)
+}
+
+func (_ IntArrayTag) getDataType() dataType {
+	return intTypeId
 }

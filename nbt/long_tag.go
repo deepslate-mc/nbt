@@ -7,7 +7,7 @@ const longTypeId longType = 4
 type longType int8
 
 type LongTag struct {
-	value int64
+	Value int64
 }
 
 func (_ longType) Read(reader Reader) (Tag, error) {
@@ -18,7 +18,7 @@ func (_ longType) Read(reader Reader) (Tag, error) {
 	}
 
 	return LongTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -29,9 +29,13 @@ func (_ longType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected LONG")
 	}
 
-	return writer.writeInt64(data.value)
+	return writer.writeInt64(data.Value)
 }
 
 func (_ longType) GetId() int8 {
 	return int8(longTypeId)
+}
+
+func (_ LongTag) getDataType() dataType {
+	return longTypeId
 }

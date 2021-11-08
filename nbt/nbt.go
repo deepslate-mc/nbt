@@ -6,22 +6,12 @@ import (
 
 
 func Read(reader io.Reader) (Tag, error) {
-	return NewReader(reader).Read()
+	_, tag, err := NewReader(reader).Read()
+	return tag, err
 }
 
 func Write(writer io.Writer, tag Tag) error {
-	return NewWriter(writer).Write(tag)
-}
-
-// NewByteTag TODO: Add Tag "Constructors"
-func NewByteTag(name string, value int8) Tag {
-	return BaseTag{
-		name: name,
-		dataType: byteTypeId,
-		tag: ByteTag{
-			value: value,
-		},
-	}
+	return NewWriter(writer).Write("", tag)
 }
 
 //TODO: Unmarshal and Marshal using Reflection

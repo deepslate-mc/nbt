@@ -1,3 +1,3 @@
-module Deepslate
+module nbt
 
 go 1.17

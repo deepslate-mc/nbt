@@ -10,7 +10,7 @@ const longArrayTypeId longArrayType = 12
 type longArrayType int8
 
 type LongArrayTag struct {
-	value []int64
+	Value []int64
 }
 
 func (_ longArrayType) Read(reader Reader) (Tag, error) {
@@ -33,7 +33,7 @@ func (_ longArrayType) Read(reader Reader) (Tag, error) {
 	}
 
 	return LongArrayTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -44,11 +44,11 @@ func (_ longArrayType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected LONGARRAY")
 	}
 
-	if err := writer.writeInt32(int32(len(data.value))); err != nil {
+	if err := writer.writeInt32(int32(len(data.Value))); err != nil {
 		return err
 	}
 
-	for i, value := range data.value {
+	for i, value := range data.Value {
 		if err := writer.writeInt64(value); err != nil {
 			return fmt.Errorf("unable to write long array at index %d. Reason: %w", i, err)
 		}
@@ -59,4 +59,8 @@ func (_ longArrayType) Write(writer Writer, tag Tag) error {
 
 func (_ longArrayType) GetId() int8 {
 	return int8(longArrayTypeId)
+}
+
+func (_ LongArrayTag) getDataType() dataType {
+	return longTypeId
 }

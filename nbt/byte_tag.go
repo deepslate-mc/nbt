@@ -7,7 +7,7 @@ const byteTypeId byteType = 1
 type byteType int8
 
 type ByteTag struct {
-	value int8
+	Value int8
 }
 
 func (_ byteType) Read(reader Reader) (Tag, error) {
@@ -17,7 +17,7 @@ func (_ byteType) Read(reader Reader) (Tag, error) {
 		return nil, err
 	}
 
-	return ByteTag{value: data}, nil
+	return ByteTag{Value: data}, nil
 }
 
 func (_ byteType) Write(writer Writer, tag Tag) error {
@@ -26,9 +26,13 @@ func (_ byteType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected END")
 	}
 
-	return writer.writeInt8(data.value)
+	return writer.writeInt8(data.Value)
 }
 
 func (_ byteType) GetId() int8 {
 	return int8(byteTypeId)
+}
+
+func (_ ByteTag) getDataType() dataType {
+	return byteTypeId
 }

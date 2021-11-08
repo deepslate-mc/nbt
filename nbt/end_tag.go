@@ -9,16 +9,6 @@ type endType int8
 type endTag struct{}
 
 func (end endType) Read(reader Reader) (Tag, error) {
-	data, err := reader.readInt8()
-
-	if err != nil {
-		return nil, err
-	}
-
-	if data != 0 {
-		return nil, errors.New("invalid end tag")
-	}
-
 	return endTag{}, nil
 }
 
@@ -27,9 +17,13 @@ func (_ endType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected END")
 	}
 
-	return writer.writeInt8(0)
+	return nil
 }
 
 func (_ endType) GetId() int8 {
 	return int8(endTypeId)
+}
+
+func (_ endTag) getDataType() dataType {
+	return endTypeId
 }

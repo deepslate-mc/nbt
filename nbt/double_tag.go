@@ -7,7 +7,7 @@ const doubleTypeId doubleType = 6
 type doubleType int8
 
 type DoubleTag struct {
-	value float64
+	Value float64
 }
 
 func (_ doubleType) Read(reader Reader) (Tag, error) {
@@ -18,7 +18,7 @@ func (_ doubleType) Read(reader Reader) (Tag, error) {
 	}
 
 	return DoubleTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -29,9 +29,13 @@ func (_ doubleType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected DOUBLE")
 	}
 
-	return writer.writeFloat64(data.value)
+	return writer.writeFloat64(data.Value)
 }
 
 func (_ doubleType) GetId() int8 {
 	return int8(doubleTypeId)
+}
+
+func (_ DoubleTag) getDataType() dataType {
+	return doubleTypeId
 }

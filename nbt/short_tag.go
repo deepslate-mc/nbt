@@ -7,7 +7,7 @@ const shortTypeId shortType = 2
 type shortType int8
 
 type ShortTag struct {
-	value int16
+	Value int16
 }
 
 func (_ shortType) Read(reader Reader) (Tag, error) {
@@ -18,7 +18,7 @@ func (_ shortType) Read(reader Reader) (Tag, error) {
 	}
 
 	return ShortTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -29,9 +29,13 @@ func (_ shortType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected SHORT")
 	}
 
-	return writer.writeInt16(data.value)
+	return writer.writeInt16(data.Value)
 }
 
 func (_ shortType) GetId() int8 {
 	return int8(shortTypeId)
+}
+
+func (_ ShortTag) getDataType() dataType {
+	return shortTypeId
 }

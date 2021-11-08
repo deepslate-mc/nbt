@@ -7,31 +7,26 @@ const compoundTypeId compoundType = 10
 type compoundType int8
 
 type CompoundTag struct {
-	value []BaseTag
+	Tags map[string]Tag
 }
 
 func (_ compoundType) Read(reader Reader) (Tag, error) {
 	compound := CompoundTag{
-		value: []BaseTag{},
+		Tags: map[string]Tag{},
 	}
 
 	for {
-		tag, err := reader.Read()
+		name, tag, err := reader.Read()
 
 		if err != nil {
 			return nil, err
 		}
 
-		baseTag, ok := tag.(BaseTag)
-		if !ok {
-			return nil, errors.New("unable to read CompoundTag. Expected reader.Read() to return BASE_TAG")
-		}
-
-		if baseTag.dataType == endTypeId {
+		if tag.getDataType() == endTypeId {
 			break
 		}
 
-		compound.value = append(compound.value, baseTag)
+		compound.Tags[name] = tag
 	}
 
 	return compound, nil
@@ -44,23 +39,27 @@ func (_ compoundType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected COMPOUND")
 	}
 
-	for _, value := range data.value {
-		err := writer.Write(value)
+	for name, value := range data.Tags {
+		err := writer.Write(name, value)
 
 		if err != nil {
 			return err
 		}
 	}
 
-	return writer.Write(
-		BaseTag{
-			name:     "",
-			dataType: endTypeId,
-			tag:      endTag{},
-		},
-	)
+	err := writer.writeInt8(endTypeId.GetId())
+	if err != nil {
+		return err
+	}
+
+	err = endTypeId.Write(writer, endTag{})
+	return err
 }
 
 func (_ compoundType) GetId() int8 {
 	return int8(compoundTypeId)
+}
+
+func (_ CompoundTag) getDataType() dataType {
+	return compoundTypeId
 }

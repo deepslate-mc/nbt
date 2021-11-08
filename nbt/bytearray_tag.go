@@ -7,7 +7,7 @@ const byteArrayTypeId byteArrayType = 7
 type byteArrayType int8
 
 type ByteArrayTag struct {
-	value []int8
+	Value []int8
 }
 
 func (_ byteArrayType) Read(reader Reader) (Tag, error) {
@@ -18,7 +18,7 @@ func (_ byteArrayType) Read(reader Reader) (Tag, error) {
 	}
 
 	return ByteArrayTag{
-		value: data,
+		Value: data,
 	}, nil
 }
 
@@ -29,9 +29,13 @@ func (_ byteArrayType) Write(writer Writer, tag Tag) error {
 		return errors.New("incompatible tag. Expected BYTE_ARRAY")
 	}
 
-	return writer.writeByteArray(data.value)
+	return writer.writeByteArray(data.Value)
 }
 
 func (_ byteArrayType) GetId() int8 {
 	return int8(byteArrayTypeId)
+}
+
+func (_ ByteArrayTag) getDataType() dataType {
+	return byteArrayTypeId
 }
