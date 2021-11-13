@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const stringTypeId stringType = 8
 
@@ -38,4 +42,20 @@ func (_ stringType) GetId() int8 {
 
 func (_ StringTag) getDataType() dataType {
 	return stringTypeId
+}
+
+func (dtype stringType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(StringTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	err := RequireKind(value, reflect.String)
+	if err != nil {
+		return err
+	}
+
+	value.SetString(data.Value)
+
+	return nil
 }

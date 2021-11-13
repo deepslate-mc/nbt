@@ -12,6 +12,7 @@ type dataType interface {
 	Read(reader Reader) (Tag, error)
 	Write(writer Writer, tag Tag) error
 	GetId() int8
+	TagDecoder
 }
 
 func getDataType(dtype int8) (dataType, error) {

@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const compoundTypeId compoundType = 10
 
@@ -62,4 +66,51 @@ func (_ compoundType) GetId() int8 {
 
 func (_ CompoundTag) getDataType() dataType {
 	return compoundTypeId
+}
+
+func (dtype compoundType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(CompoundTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	if err := RequireKind(reflect.Indirect(value), reflect.Struct); err != nil {
+		return err
+	}
+
+	fields := readFields(reflect.Indirect(value))
+
+	for name, t := range data.Tags {
+		if field, ok := fields[name]; ok {
+			if err := t.getDataType().Decode(t, field); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func readFields(v reflect.Value) map[string]reflect.Value {
+	fields := make(map[string]reflect.Value)
+
+	t := v.Type()
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+
+		if !field.IsExported() {
+			continue
+		}
+
+		tag, ok := field.Tag.Lookup("nbt")
+
+		if !ok {
+			fields[field.Name] = v.Field(i)
+		} else {
+			fields[tag] = v.Field(i)
+		}
+	}
+
+	return fields
 }

@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const shortTypeId shortType = 2
 
@@ -38,4 +42,20 @@ func (_ shortType) GetId() int8 {
 
 func (_ ShortTag) getDataType() dataType {
 	return shortTypeId
+}
+
+func (dtype shortType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(ShortTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	err := RequireKind(value, reflect.Int16)
+	if err != nil {
+		return err
+	}
+
+	value.SetInt(int64(data.Value))
+
+	return nil
 }

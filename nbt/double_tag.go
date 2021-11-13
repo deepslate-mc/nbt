@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const doubleTypeId doubleType = 6
 
@@ -38,4 +42,20 @@ func (_ doubleType) GetId() int8 {
 
 func (_ DoubleTag) getDataType() dataType {
 	return doubleTypeId
+}
+
+func (dtype doubleType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(DoubleTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	err := RequireKind(value, reflect.Float64)
+	if err != nil {
+		return err
+	}
+
+	value.SetFloat(data.Value)
+
+	return nil
 }

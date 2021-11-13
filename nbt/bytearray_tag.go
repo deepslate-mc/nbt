@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const byteArrayTypeId byteArrayType = 7
 
@@ -38,4 +42,24 @@ func (_ byteArrayType) GetId() int8 {
 
 func (_ ByteArrayTag) getDataType() dataType {
 	return byteArrayTypeId
+}
+
+func (dtype byteArrayType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(ByteArrayTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	if err := RequireKind(value, reflect.Slice); err != nil {
+		return err
+	}
+
+	//TODO: Does this actually work?
+	if err := RequireKind(value.Elem(), reflect.Int8); err != nil {
+		return err
+	}
+
+	value.Set(reflect.ValueOf(data.Value))
+
+	return nil
 }

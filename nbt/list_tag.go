@@ -3,6 +3,7 @@ package nbt
 import (
 	"errors"
 	"fmt"
+	"reflect"
 )
 
 const listTypeId listType = 9
@@ -77,4 +78,30 @@ func (_ listType) GetId() int8 {
 
 func (_ ListTag) getDataType() dataType {
 	return listTypeId
+}
+
+func (dtype listType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(ListTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	if err := RequireKind(value, reflect.Slice); err != nil {
+		return err
+	}
+
+	if value.IsNil() {
+		value.Set(reflect.MakeSlice(value.Type(), 0, 0))
+	}
+
+	value.SetCap(len(data.Value))
+	value.SetLen(len(data.Value))
+
+	for i, v := range data.Value {
+		if err := v.getDataType().Decode(v, value.Index(i)); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

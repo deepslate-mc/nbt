@@ -1,6 +1,9 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"reflect"
+)
 
 const endTypeId endType = 0
 
@@ -26,4 +29,8 @@ func (_ endType) GetId() int8 {
 
 func (_ endTag) getDataType() dataType {
 	return endTypeId
+}
+
+func (_ endType) Decode(tag Tag, value reflect.Value) error {
+	return nil
 }

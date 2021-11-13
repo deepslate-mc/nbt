@@ -1,6 +1,10 @@
 package nbt
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"reflect"
+)
 
 const floatTypeId floatType = 5
 
@@ -38,4 +42,20 @@ func (_ floatType) GetId() int8 {
 
 func (_ FloatTag) getDataType() dataType {
 	return floatTypeId
+}
+
+func (dtype floatType) Decode(tag Tag, value reflect.Value) error {
+	data, ok := tag.(FloatTag)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal tag with datatype %d using datatype %d", tag.getDataType(), dtype)
+	}
+
+	err := RequireKind(value, reflect.Float32)
+	if err != nil {
+		return err
+	}
+
+	value.SetFloat(float64(data.Value))
+
+	return nil
 }
